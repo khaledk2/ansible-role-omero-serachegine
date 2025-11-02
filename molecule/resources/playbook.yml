@@ -12,3 +12,15 @@
         password: database_password
         databases: [ database_name ]
   - role: ome.omero_searchengine
+
+  tasks:
+  - name: Ensure sysctl is present
+    package:
+      name: procps-ng
+      state: present
+    become: true
+  - name: Ensure python3-requests is installed
+    ansible.builtin.package:
+      name: python3-requests
+      state: present
+    become: yes
