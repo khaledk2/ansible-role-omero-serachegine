@@ -8,10 +8,17 @@
   become: yes
 
 - name: Ensure sysctl is present
-  package:
-    name: procps-ng
+  ansible.builtin.package:
+    name: "{{ 'procps' if ansible_os_family == 'Debian' else 'procps-ng' }}"
     state: present
   become: true
+
+
+#- name: Ensure sysctl is present
+#  package:
+#    name: procps-ng
+#    state: present
+#  become: true
 
 - name:  Import ome.docker role
   ansible.builtin.import_role:
