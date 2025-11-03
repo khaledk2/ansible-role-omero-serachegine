@@ -1,6 +1,11 @@
 ---
 # Configure and run search Engine
 
+- name: set elasticsearch_nodes_urls
+  ansible.builtin.set_fact:
+    elasticsearch_nodes_urls: []
+
+
 - name: Create searchengine folder directory
   become: yes
   file:
@@ -48,7 +53,7 @@
     state: started
     volumes:
     - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
-    -
+
 - name: configure elasticsearch for docker searchengine
   become: yes
   docker_container:
