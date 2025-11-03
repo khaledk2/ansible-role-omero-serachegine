@@ -1,4 +1,6 @@
 ---
 
-- src: ome.docker
-- src: ome.nginx
+- name: ome.docker
+- name: ome.nginx
+  src: https://github.com/pwalczysko/ansible-role-nginx
+  version: nginx-repo
