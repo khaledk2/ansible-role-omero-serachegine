@@ -1,5 +1,6 @@
 apps_folder: /data
 database_server_url: 127.0.0.1
+elasticsearch_nodes_urls: []
 database_port: 5432
 database_name: database_name
 default_datasource: data_source
