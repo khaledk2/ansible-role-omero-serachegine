@@ -1,7 +1,3 @@
 ---
-
 - name: ome.docker
-- name: ome.redis
-- name: ome.nginx
-  src: https://github.com/pwalczysko/ansible-role-nginx
-  version: nginx-repo
+

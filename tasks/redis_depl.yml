@@ -1,5 +1,22 @@
 ---
 
-- name: Include ome.redis role
-  ansible.builtin.import_role:
-    name: ome.redis
+- name: Create redis data directory
+  become: yes
+  ansible.builtin.file:
+    path: "{{ apps_folder }}/searchengine/data_dump/redis"
+    state: directory
+    # User id in elasticsearch Docker image
+    owner: 999
+    group: 999
+    mode: 0700
+  changed_when: false
+
+- name: Create Searchengine Redis container
+  community.docker.docker_container:
+    name: my-redis-container
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - "{{ apps_folder }}/searchengine/data_dump/redis"
+    restart_policy: always
