@@ -4,7 +4,7 @@
   ansible.builtin.file:
     path: "{{ apps_folder }}/searchengine/nginx/conf.d"
     state: directory
-    owner: root
+    owner: 1000
     group: root
     mode: 0644
   changed_when: false
@@ -38,7 +38,7 @@
       - "80:80"
       - "443:443"
     volumes:
-      - "{{ apps_folder }}/searchengine/nginx/conf.d/:/etc/nginx/conf.d"
+      - "{{ apps_folder }}/searchengine/nginx/conf.d/searchengine.conf:/etc/nginx/conf.d/searchengine.conf"
       - "{{ apps_folder }}/searchengine/nginx/log:/var/log/nginx"
     state: started
     restart_policy: always
