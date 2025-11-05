@@ -34,5 +34,5 @@
     restart_policy: always
     networks:
       - name: "searchengine-net"
-        ipv4_address: 10.11.0.2
+
 
