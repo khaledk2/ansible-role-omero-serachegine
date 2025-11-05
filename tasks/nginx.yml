@@ -5,6 +5,7 @@
     path: "{{ apps_folder }}/searchengine/nginx/conf.d"
     state: directory
     mode: 0644
+  changed_when: false
 
 - name: Create Nginx log directory
   become: true
@@ -12,6 +13,7 @@
     path: "{{ apps_folder }}/searchengine/nginx/log"
     state: directory
     mode: 0755
+  changed_when: false
 
 - name:  Copy serachengine Nginx config
   become: true
@@ -19,6 +21,7 @@
     dest: "{{ apps_folder }}/searchengine/nginx/conf.d/searchengine.conf"
     src: searchengine.conf.j2
     mode: 0644
+  changed_when: false
 
 - name: Run Nginx container
   become: true
