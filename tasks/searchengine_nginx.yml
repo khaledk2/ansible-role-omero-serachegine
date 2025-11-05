@@ -23,7 +23,7 @@
 - name: Run Nginx container
   become: true
   community.docker.docker_container:
-    name: my-nginx-container
+    name: searchengine-nginx-container
     image: nginx:latest
     ports:
       - "80:80"
