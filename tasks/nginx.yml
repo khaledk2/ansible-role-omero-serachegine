@@ -28,7 +28,7 @@
     published_ports:
       - "80:80"
     volumes:
-      - "{{ apps_folder }}/searchengine/nginx/conf.d/searchengine.conf:/etc/nginx/conf.d:ro"
+      - "{{ apps_folder }}/searchengine/nginx/conf.d/:/etc/nginx/conf.d:ro"
       - "{{ apps_folder }}/searchengine/nginx/log:/var/log/nginx"
     state: started
     restart_policy: always
