@@ -33,6 +33,7 @@ provisioner:
   options:
     v: true
     diff: true
+    become: true
 scenario:
   name: rockylinux9
   converge_sequence:
