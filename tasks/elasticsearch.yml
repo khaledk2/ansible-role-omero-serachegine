@@ -87,7 +87,14 @@
   changed_when: false
 
 
+- name: Get Docker network info
+  community.docker.docker_network_info:
+    name: searchengine-net
+  register: network_info
 
+- name: Check if IP is in use
+  set_fact:
+    ip_taken: "10.11.0.2 network_info.networks[0].containers.values() | map(attribute='ipv4_address') | list }}"
 
 - name: Run first docker elasticsearch main node
   become: yes
@@ -142,6 +149,7 @@
     - "{{ apps_folder }}/searchengine/elasticsearch/node1/logs:/var/log/elasticsearch"
     - "{{ apps_folder }}/searchengine/elasticsearch/certs:/usr/share/elasticsearch/config/certificates"
     - "{{ elasticsearch_backup_folder }}:{{ elasticsearch_backup_folder }}"
+  when: not ip_taken
 
 
 - name: Run docker elasticsearch for the remaining nodes
