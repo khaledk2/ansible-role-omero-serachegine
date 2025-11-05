@@ -2,21 +2,21 @@
 - name: Create Nginx configuration directory
   become: true
   ansible.builtin.file:
-    path: /etc/nginx/conf.d
+    path: "{{ apps_folder }}/searchengine/nginx/conf.d"
     state: directory
     mode: 0644
 
 - name: Create Nginx log directory
   become: true
   ansible.builtin.file:
-    path: /var/log/nginx
+    path: "{{ apps_folder }}/searchengine/nginx/log"
     state: directory
     mode: 0755
 
 - name:  Copy serachengine Nginx config
   become: true
   ansible.builtin.template:
-    dest: /etc/nginx/conf.d/searchengine.conf
+    dest: "{{ apps_folder }}/searchengine/nginx/conf.d/searchengine.conf"
     src: searchengine.conf.j2
     mode: 0644
 
@@ -29,7 +29,7 @@
       - "80:80"
       - "443:443"
     volumes:
-      - /etc/nginx/conf.d:/etc/nginx/conf.d:ro
-      - /var/log/nginx:/var/log/nginx
+      - "{{ apps_folder }}/searchengine/nginx/conf.d/searchengine.conf:/etc/nginx/conf.d:ro"
+      - "{{ apps_folder }}/searchengine/nginx/log:/var/log/nginx"
     state: started
     restart_policy: always
