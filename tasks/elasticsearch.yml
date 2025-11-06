@@ -72,10 +72,10 @@
   when: not ip_taken
 
 - copy:
-  dest: /tmp/instances.yaml
-  content: |
-    {{ instances   |to_nice_yaml }}
-  when: not ip_taken
+      dest: /tmp/instances.yaml
+      content: |
+        {{ instances   |to_nice_yaml }}
+      when: not ip_taken
 
 - name: Create nodes' cert
   become: yes
@@ -96,10 +96,12 @@
   changed_when: false
   when: not ip_taken
 
+
 - name: Get Docker network info
   community.docker.docker_network_info:
     name: searchengine-net
   register: network_info
+
 
 - name: Run first docker elasticsearch main node
   become: yes
