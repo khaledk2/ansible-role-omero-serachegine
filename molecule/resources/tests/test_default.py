@@ -9,3 +9,8 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 def test_nginx_gateway(host):
     out = host.check_output('curl -L  http://127.0.0.1:8080/searchengine/api/v1/resources/')
     assert 'OMERO search engine (API V1)' in out
+
+
+def test_searchengine_gateway(host):
+    out = host.check_output('curl -L  http://127.0.0.1:5577/searchengine/api/v1/resources/')
+    assert 'OMERO search engine (API V1)' in out
