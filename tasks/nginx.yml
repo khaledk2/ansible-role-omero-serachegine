@@ -44,7 +44,7 @@
       - "{{ apps_folder }}/searchengine/nginx/log:/var/log/nginx"
     state: started
     restart_policy: always
-    networks:
-      - name: "searchengine-net"
+    #networks:
+    #  - name: "searchengine-net"
 
 
