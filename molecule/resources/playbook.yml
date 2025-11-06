@@ -25,3 +25,16 @@
       name: python3-requests
       state: present
     become: yes
+
+  - name: install redis
+    ansible.builtin.dnf:
+      name: redis
+      state: present
+  become: yes
+
+- name: diable redis sevice installed on the host
+  ansible.builtin.systemd_service:
+      name: redis
+      state: stopped
+      enabled: false
+  become: yes
