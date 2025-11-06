@@ -14,7 +14,10 @@ def test_redis_connection(host):
     out = host.check_output('redis-cli ping')
     assert 'PONG' in out
 
-
 def test_searchengine_connection(host):
     out = host.check_output('curl -L  http://127.0.0.1:5577/searchengine/api/v1/resources/')
     assert 'OMERO search engine (API V1)' in out
+
+def test_searchengine_database_connection(host):
+    out = host.check_output(' curl  -k -u "elastic:elastic_password" https://127.0.0.1:9201//_stats?pretty')
+    assert  '"health" : "green"' in out
