@@ -75,7 +75,7 @@
       dest: /tmp/instances.yaml
       content: |
         {{ instances   |to_nice_yaml }}
-      when: not ip_taken
+  when: not ip_taken
 
 - name: Create nodes' cert
   become: yes
