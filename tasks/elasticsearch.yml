@@ -36,6 +36,11 @@
   with_items:
     - { varname: "vm.max_map_count", varvalue: "262144" }
 
+- name: Check if IP is in use
+  set_fact:
+    ip_taken: "10.11.0.2 network_info.networks[0].containers.values() | map(attribute='ipv4_address') | list }}"
+
+
 - name: create CA
   become: yes
   community.docker.docker_container:
@@ -50,6 +55,7 @@
         - "{{ apps_folder }}/searchengine/elasticsearch/certs:/certs"
         - "{{ apps_folder }}/searchengine/elasticsearch/certs:/usr/share/elasticsearch/config/certificates"
   changed_when: false
+  when: not ip_taken
 
 
 - name: Wait for CA file
@@ -57,16 +63,19 @@
     path: "{{ apps_folder }}/searchengine/elasticsearch/certs/elastic-ca.p12"
     state: present
   register: check_ca_file_result
+  when: not ip_taken
 
 
 - name: Show wait CA file result
   debug:
     var: check_ca_file_result
+  when: not ip_taken
 
 - copy:
       dest: /tmp/instances.yaml
       content: |
         {{ instances   |to_nice_yaml }}
+      when: not ip_taken
 
 - name: Create nodes' cert
   become: yes
@@ -85,6 +94,7 @@
         - "{{ apps_folder }}/searchengine/elasticsearch/certs:/usr/share/elasticsearch/config/certificates"
         - /tmp/instances.yaml:/tmp/instances.yaml
   changed_when: false
+  when: not ip_taken
 
 
 - name: Get Docker network info
@@ -92,9 +102,6 @@
     name: searchengine-net
   register: network_info
 
-- name: Check if IP is in use
-  set_fact:
-    ip_taken: "10.11.0.2 network_info.networks[0].containers.values() | map(attribute='ipv4_address') | list }}"
 
 - name: Run first docker elasticsearch main node
   become: yes
@@ -152,6 +159,17 @@
   when: not ip_taken
 
 
+############################
+- name: Get info about the searchengine_elasticsearch_node1 container
+  community.docker.docker_container_info:
+    name: searchengine_elasticsearch_node1
+  register: container_info
+
+- name: Debug container state
+  ansible.builtin.debug:
+    msg: "Container '{{ container_info.container.Name }}' is in state: {{ container_info.container.State.Status }}"
+
+########################################
 - name: Run docker elasticsearch for the remaining nodes
   become: yes
   community.docker.docker_container:
