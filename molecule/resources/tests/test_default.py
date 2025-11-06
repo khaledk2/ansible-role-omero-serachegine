@@ -10,11 +10,11 @@ def test_nginx_gateway(host):
     out = host.check_output('curl -L  http://127.0.0.1:8080/searchengine/api/v1/resources/')
     assert 'OMERO search engine (API V1)' in out
 
-def test_redis(host):
+def test_redis_connection(host):
     out = host.check_output('redis-cli ping')
     assert 'PONG' in out
 
 
-def test_searchengine(host):
+def test_searchengine_connection(host):
     out = host.check_output('curl -L  http://127.0.0.1:5577/searchengine/api/v1/resources/')
     assert 'OMERO search engine (API V1)' in out
