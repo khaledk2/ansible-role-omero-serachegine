@@ -299,7 +299,7 @@
     image: "{{ searchengine_docker_image }}"
     name: searchengine_create_index
     cleanup: True
-    command: "create_index"
+    command: "create_index image"
     networks:
     - name: searchengine-net
     #restart: "{{ searchengine_conf_status | changed }}"
@@ -317,8 +317,8 @@
     name: searchengine_create_index
   register: container_index_info
   until: not container_index_info.container.State.Running
-  retries: 160
-  delay: 10
+  retries: 60
+  delay: 1
   when: not container_info_searchengine_f.exists
 
 
