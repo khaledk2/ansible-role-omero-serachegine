@@ -246,7 +246,7 @@
   ansible.builtin.debug:
     msg: "Container '{{ container_info_celery.container.Name }}' is in state: {{ container_info.container.State.Status }}"
   #when: ip_taken | bool
-  
+
 ########################################
 
 
@@ -278,3 +278,21 @@
     msg: "Container '{{ container_info_beat.container.Name }}' is in state: {{ container_info.container.State.Status }}"
   #when: ip_taken | bool
 ########################################
+
+
+- name: create_omero_indexes
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: searchengine_beat
+    cleanup: True
+    command: "create_omero_indexes"
+    networks:
+    - name: searchengine-net
+    #restart: "{{ searchengine_conf_status | changed }}"
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
