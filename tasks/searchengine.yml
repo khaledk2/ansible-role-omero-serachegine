@@ -9,7 +9,8 @@
 
 - name: Debug search container state
   ansible.builtin.debug:
-    msg: "Container '{{ container_info_searchengine_f }}' is in state: {{ container_info_searchengine_f.container}}"
+    msg: "Container '{{ container_info_searchengine_f }}' is in state: {{ container_info_searchengine_f.exists}}"
+
 
 
 - name: set elasticsearch_nodes_urls
@@ -216,7 +217,7 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
-  when: container_info_searchengine_f.container is ansible.builtin.none
+  when: not container_info_searchengine_f.container.exists
 
 ############################
 - name: Get info about the searchengine container
@@ -245,7 +246,8 @@
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
-  when: container_info_searchengine_f.container is ansible.builtin.none
+  when: not container_info_searchengine_f.container.exists
+
 
 
 ############################
@@ -278,7 +280,7 @@
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
-  when: container_info_searchengine_f.container.State.Status != "running"
+  when: not container_info_searchengine_f.container.exists
 ############################
 - name: Get info about the searchengine_beat container
   community.docker.docker_container_info:
@@ -307,5 +309,5 @@
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
-    when: container_info_searchengine_f.container is ansible.builtin.none
+    when: not container_info_searchengine_f.container.exists
 
