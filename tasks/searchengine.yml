@@ -320,3 +320,7 @@
   retries: 160
   delay: 10
   when: not container_info_searchengine_f.exists
+
+
+- debug:
+  msg: "Results is: {{ container_index_info }}"
