@@ -217,7 +217,7 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
-  when: not container_info_searchengine_f.container.exists
+  when: not container_info_searchengine_f.exists
 
 ############################
 - name: Get info about the searchengine container
@@ -246,7 +246,7 @@
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
-  when: not container_info_searchengine_f.container.exists
+  when: not container_info_searchengine_f.exists
 
 
 
@@ -280,7 +280,7 @@
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
-  when: not container_info_searchengine_f.container.exists
+  when: not container_info_searchengine_f.exists
 ############################
 - name: Get info about the searchengine_beat container
   community.docker.docker_container_info:
@@ -309,5 +309,5 @@
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
-    when: not container_info_searchengine_f.container.exists
+    when: not container_info_searchengine_f.exists
 
