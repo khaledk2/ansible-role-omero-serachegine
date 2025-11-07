@@ -24,7 +24,6 @@ def test_searchengine_elastic_cluster_health(host):
 
 
 def test_searchengine_search_elastic_connection(host):
-    out = host.check_output('curl  -k -u "elastic:elastic_password" https://127.0.0.1:9201/_cluster/health?pretty')
+    out = host.check_output('http://idr-testing.openmicroscopy.org/searchengine//api/v1/resources/image/searchvaluesusingkey/?key=cell%20line')
     assert  '"error"' in out
 
-#http://idr-testing.openmicroscopy.org/searchengine//api/v1/resources/image/searchvaluesusingkey/?key=cell%20line
