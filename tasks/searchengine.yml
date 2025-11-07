@@ -297,7 +297,7 @@
   become: yes
   community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
-    name: searchengine_beat
+    name: searchengine_create_index
     cleanup: True
     command: "create_index"
     networks:
