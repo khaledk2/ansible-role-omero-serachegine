@@ -27,7 +27,7 @@
     owner: 1000
     group: root
     mode: 0755
-  #when: not container_info_searchengine_f.exists
+  when: not container_info_searchengine_f.exists
 
 - name: Create searchengine logs directory
   become: yes
@@ -317,7 +317,6 @@
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   when: not container_info_searchengine_f.exists
-
 
 - name: Wait for index to exit
   community.docker.docker_container_info:
