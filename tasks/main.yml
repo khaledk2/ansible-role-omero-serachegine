@@ -30,7 +30,7 @@
     path: "{{ apps_folder }}/searchengine"
     recurse: yes
     state: directory
-    owner: root
+    owner: 1000
     group: root
     mode: 0755
   changed_when: false

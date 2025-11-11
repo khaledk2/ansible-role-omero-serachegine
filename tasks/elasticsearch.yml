@@ -6,14 +6,11 @@
 - name: Add elastic nodes to instances_nodes
   ansible.builtin.set_fact:
     instances_nodes: "{{instances_nodes + [( {'name' : 'searchengine_elasticsearch_node'+item, 'dns': ['searchengine_elasticsearch_node'+item,'localhost'],'ip': '127.0.0.1'})] }}"
-
   with_sequence: start=1 count={{ elasticsearch_no_nodes }}
-
 
 - name: Add elastic nodes to instances
   ansible.builtin.set_fact:
     instances: "{{instances | combine ( {'instances' : instances_nodes}) }}"
-
 
 #Add all elasticsearch nodes
 - name: Add elastic nodes to elasticsearch_nodes
@@ -39,7 +36,6 @@
   with_items:
     - { varname: "vm.max_map_count", varvalue: "262144" }
 
-
 - name: create CA
   become: yes
   community.docker.docker_container:
@@ -56,14 +52,12 @@
   changed_when: false
   when: not ip_taken | bool
 
-
 - name: Wait for CA file
   ansible.builtin.wait_for:
     path: "{{ apps_folder }}/searchengine/elasticsearch/certs/elastic-ca.p12"
     state: present
   register: check_ca_file_result
   when: not ip_taken | bool
-
 
 - name: Show wait CA file result
   debug:
@@ -86,7 +80,6 @@
     echo 'done';
     unzip /usr/share/elasticsearch/config/certificates/bundle.zip -d /usr/share/elasticsearch/config/certificates/;
        '"
-
     state: started
     volumes:
         - "{{ apps_folder }}/searchengine/elasticsearch/certs:/certs"
@@ -95,22 +88,18 @@
   changed_when: false
   when: not ip_taken | bool
 
-
 - name: Get Docker network info
   community.docker.docker_network_info:
     name: searchengine-net
   register: network_info
 
-
 - debug:
     msg: "this the value: {{ ip_taken }} "
-
 
 - name: Run first docker elasticsearch main node
   become: yes
   community.docker.docker_container:
     image: "{{ search_engineelasticsearch_docker_image }}"
-
     name: "searchengine_elasticsearch_node1"
     cleanup: True
     ulimits:
