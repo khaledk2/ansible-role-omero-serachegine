@@ -164,7 +164,7 @@
 
 - name: Debug container state
   ansible.builtin.debug:
-    msg: "Container '{{ container_info.container.Name }}' is in state: {{ container_info.container.State.Status }}"
+    msg: "Container '{{ container_info.container.Name }}' is in state: {{ container_info }}"
   #when: ip_taken | bool
 ########################################
 
