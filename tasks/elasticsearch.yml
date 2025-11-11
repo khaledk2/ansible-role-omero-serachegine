@@ -158,7 +158,7 @@
 
 - name: Display node container logs
   ansible.builtin.debug:
-    meg:  " Output is: {{ container_noder1_run_result.Output }}"
+    meg:  " Output is: {{ container_noder1_run_result }}"
   # when: not ip_taken | bool
 
 ############################
