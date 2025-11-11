@@ -154,6 +154,11 @@
     - "{{ apps_folder }}/searchengine/elasticsearch/certs:/usr/share/elasticsearch/config/certificates"
     - "{{ elasticsearch_backup_folder }}:{{ elasticsearch_backup_folder }}"
   when: not container_info_elasticsearch_node1.exists
+  register: container_noder1_run_result
+
+- name: Display node container logs
+  ansible.builtin.debug:
+    var: container_noder1_run_result.Output
   # when: not ip_taken | bool
 
 ############################
