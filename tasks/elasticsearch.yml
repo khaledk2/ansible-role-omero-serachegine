@@ -173,6 +173,7 @@
 
 - name: get elastic node1 logs
   command: " docker logs -f searchengine_elasticsearch_node1"
+  timeout: 30
   register: node1_logs
 
 - name: Debug elastic node 1 logs
