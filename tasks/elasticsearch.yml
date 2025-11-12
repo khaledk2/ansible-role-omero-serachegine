@@ -161,7 +161,6 @@
     var:  container_noder1_run_result
   # when: not ip_taken | bool
 ############################
-
 - name: Get info about the searchengine_elasticsearch_node1 container
   community.docker.docker_container_info:
     name: searchengine_elasticsearch_node1
@@ -171,7 +170,20 @@
   ansible.builtin.debug:
     msg: "Container '{{ container_info.container.Name }}' is in state: {{ container_info }}"
   #when: ip_taken | bool
+
+- name: get elastic node1 logs
+  command: " docker logs -f searchengine_elasticsearch_node1"
+  register: node1_logs
+
+- name: Debug elastic node 1 logs
+  ansible.builtin.debug:
+    msg: "Node1 logs is:  '{{ node1_logs }}"
+
+
+
 ########################################
+
+
 
 - name: Run docker elasticsearch for the remaining nodes
   become: yes
