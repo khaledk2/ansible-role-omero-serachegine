@@ -176,11 +176,12 @@
   timeout: 30
   ignore_errors: true
   register: node1_logs
+  changed_when: false
 
 - name: Debug elastic node 1 logs
   ansible.builtin.debug:
     msg: "Node1 logs is:  '{{ node1_logs }}"
-
+  changed_when: false
 
 
 ########################################
