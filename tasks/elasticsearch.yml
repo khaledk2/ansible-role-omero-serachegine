@@ -140,6 +140,9 @@
       xpack.security.transport.ssl.truststore.path: "/usr/share/elasticsearch/config/certificates/searchengine_elasticsearch_node1/searchengine_elasticsearch_node1.p12"
       xpack.security.transport.ssl.keystore.password: "{{ keystore_password }}"
       xpack.security.transport.ssl.truststore.password: "{{ keystore_password }}"
+      cluster.routing.allocation.disk.watermark.low: "90%"
+      cluster.routing.allocation.disk.watermark.high: "95%"
+      cluster.routing.allocation.disk.watermark.flood_stage: "98%"
     #########################################################################
     networks:
     - name: "searchengine-net"
