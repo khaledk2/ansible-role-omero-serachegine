@@ -69,6 +69,7 @@
     cleanup: True
     command: "set_elasticsearch_backup_folder -b {{ elasticsearch_backup_folder }}"
     state: started
+    auto_remove: yes
     volumes:
     - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
   changed_when: false
@@ -82,6 +83,7 @@
     cleanup: True
     command: "set_elasticsearch_configuration -e {{ elasticsearch_nodes_urls | join(',') }}"
     state: started
+    auto_remove: yes
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
   changed_when: false
@@ -93,6 +95,7 @@
     image: "{{ searchengine_docker_image }}"
     name: searchengine_database
     cleanup: True
+    auto_remove: yes
     #auto_remove: yes
     command: >
       set_database_configuration -d {{ database_name }} -s {{ database_port }} -n {{ database_username }} -p {{ database_user_password }} -b {{ apps_folder }} -w {{ default_datasource }} -u {{ database_server_url }}
@@ -112,6 +115,7 @@
     image: "{{ searchengine_docker_image }}"
     name: searchengine_database
     cleanup: True
+    auto_remove: yes
     #auto_remove: yes
     command: >
       set_default_datasource -d  {{ default_datasource }}
@@ -127,6 +131,7 @@
     image: "{{ searchengine_docker_image }}"
     name: searchengine_IDR_TEST_FILE
     cleanup: True
+    auto_remove: yes
     command: "set_idr_test_file -i {{ IDR_TEST_FILE_URL }}"
     state: started
     volumes:
@@ -139,6 +144,7 @@
     image: "{{ searchengine_docker_image }}"
     name: searchengine_cache
     cleanup: True
+    auto_remove: yes
     #auto_remove: yes
     command: "set_cache_folder -c /etc/searchengine/cachedata"
     #networks:
@@ -156,6 +162,7 @@
     image: "{{ searchengine_docker_image }}"
     name: searchengine_cache
     cleanup: True
+    auto_remove: yes
     #auto_remove: yes
     command: "set_cache_rows_number -n {{ cache_rows }}"
     state: started
@@ -169,6 +176,7 @@
     image: "{{ searchengine_docker_image }}"
     name: searchengine_cache
     cleanup: True
+    auto_remove: yes
     #auto_remove: yes
     command: "set_searchengine_secret_key -s {{ searchengine_secret_key }}"
     state: started
@@ -183,6 +191,7 @@
     image: "{{ searchengine_docker_image }}"
     name: elastics_password
     cleanup: True
+    auto_remove: yes
     #auto_remove: yes
     command: "set_elasticsearch_password -e {{ ELASTIC_PASSWORD }}"
     state: started
@@ -197,6 +206,7 @@
     image: "{{ searchengine_docker_image }}"
     name: redis_url
     cleanup: True
+    auto_remove: yes
     #auto_remove: yes
     command: "set_redis_url -r {{ REDIS_URL }}"
     state: started
@@ -212,6 +222,7 @@
     image: "{{ searchengine_docker_image }}"
     name: elastics_password
     cleanup: True
+    auto_remove: yes
     #auto_remove: yes
     command: "set_automatic_refresh -a {{ automatic_refresh }}"
     state: started
@@ -240,15 +251,15 @@
   when: not container_info_searchengine_f.exists
 
 ############################
-- name: Get info about the searchengine container
-  community.docker.docker_container_info:
-    name: searchengine
-  register: container_info_searchengine
+#- name: Get info about the searchengine container
+#  community.docker.docker_container_info:
+#    name: searchengine
+#  register: container_info_searchengine
 
-- name: Debug search container state
-  ansible.builtin.debug:
-    msg: "Container '{{ container_info_searchengine.container.Name }}' is in state: {{ container_info.container.State.Status }}"
-  #when: ip_taken | bool
+#- name: Debug search container state
+#  ansible.builtin.debug:
+#    msg: "Container '{{ container_info_searchengine.container.Name }}' is in state: {{ container_info_searchengine_f }}"
+#  #when: ip_taken | bool
 ########################################
 
 - name: Run docker celery job (Synchronize queries)
@@ -271,14 +282,14 @@
 
 
 ############################
-- name: Get info about the searchengine_celery container
-  community.docker.docker_container_info:
-    name: searchengine_celery
-  register: container_info_celery
+#- name: Get info about the searchengine_celery container
+#  community.docker.docker_container_info:
+#    name: searchengine_celery
+#  register: container_info_celery
 
-- name: Debug celery container state
-  ansible.builtin.debug:
-    msg: "Container '{{ container_info_celery.container.Name }}' is in state: {{ container_info.container.State.Status }}"
+#- name: Debug celery container state
+#  ansible.builtin.debug:
+#    msg: "Container '{{ container_info_celery.container.Name }}' is in state: {{ container_info.container.State.Status }}"
 
 
 ########################################
@@ -302,14 +313,14 @@
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   when: not container_info_searchengine_f.exists
 ############################
-- name: Get info about the searchengine_beat container
-  community.docker.docker_container_info:
-    name: searchengine_beat
-  register: container_info_beat
+#- name: Get info about the searchengine_beat container
+#  community.docker.docker_container_info:
+#    name: searchengine_beat
+#  register: container_info_beat
 
-- name: Debug beat container state
-  ansible.builtin.debug:
-    msg: "Container '{{ container_info_beat.container.Name }}' is in state: {{ container_info.container.State.Status }}"
+#- name: Debug beat container state
+#  ansible.builtin.debug:
+#    msg: "Container '{{ container_info_beat.container.Name }}' is in state: {{ container_info.container.State.Status }}"
 
 ########################################
 
@@ -347,13 +358,13 @@
 
 
 
-- name: Get info about the node status
-  command: "docker logs searchengine_elasticsearch_node1"
-  changed_when: false
+#- name: Get info about the node status
+#  command: "docker logs searchengine_elasticsearch_node1"
+#  changed_when: false
 
-  register: node_status
+#  register: node_status
 
-- name: Debug node1 status
-  ansible.builtin.debug:
-    msg: "Container '{{ node_status }}"
-  changed_when: false
+#- name: Debug node1 status
+#  ansible.builtin.debug:
+#    msg: "Container '{{ node_status }}"
+#  changed_when: false
