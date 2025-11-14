@@ -342,26 +342,26 @@
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   when: not container_info_searchengine_f.exists
 
-- name: Wait for index to exit
-  community.docker.docker_container_info:
-    name: searchengine_create_index
-  register: container_index_info
+#- name: Wait for index to exit
+#  community.docker.docker_container_info:
+#    name: searchengine_create_index
+#  register: container_index_info
   #until: not container_index_info.container.State.Running
   #retries: 60
   #delay: 1
-  when: not container_info_searchengine_f.exists
+#  when: not container_info_searchengine_f.exists
 
 #- name: Debug index  container state
 #  ansible.builtin.debug:
 #    msg:  "Results is: {{ container_index_info }}"
 
-- name: Get info about the node status
-  command: "docker logs searchengine_elasticsearch_node1"
-  changed_when: false
+#- name: Get info about the node status
+#  command: "docker logs searchengine_elasticsearch_node1"
+#  changed_when: false
 
-  register: node_status
+#  register: node_status
 
-- name: Debug node1 status
-  ansible.builtin.debug:
-    msg: "Container '{{ node_status }}"
-  changed_when: false
+#- name: Debug node1 status
+#  ansible.builtin.debug:
+#    msg: "Container '{{ node_status }}"
+#  changed_when: false
