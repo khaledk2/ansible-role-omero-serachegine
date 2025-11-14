@@ -35,11 +35,11 @@
 # I got some memory exceptions when start using elasticsearch cluster and
 # increasing the mmap counts limits fix this issue
 #https://www.elastic.co/guide/en/elasticsearch/reference/7.16 /vm-max-map-count.html
-#- name: set vm.max_map_count to 262144 in sysctl
-#  become: yes
-#  ansible.posix.sysctl: name={{ item.varname }} value={{ item.varvalue }}
-#  with_items:
-#    - { varname: "vm.max_map_count", varvalue: "262144" }
+- name: set vm.max_map_count to 262144 in sysctl
+  become: yes
+  ansible.posix.sysctl: name={{ item.varname }} value={{ item.varvalue }}
+  with_items:
+    - { varname: "vm.max_map_count", varvalue: "262144" }
 
 - name: create CA
   become: yes
@@ -141,9 +141,9 @@
       xpack.security.transport.ssl.truststore.path: "/usr/share/elasticsearch/config/certificates/searchengine_elasticsearch_node1/searchengine_elasticsearch_node1.p12"
       xpack.security.transport.ssl.keystore.password: "{{ keystore_password }}"
       xpack.security.transport.ssl.truststore.password: "{{ keystore_password }}"
-      cluster.routing.allocation.disk.watermark.low: "90%"
-      cluster.routing.allocation.disk.watermark.high: "95%"
-      cluster.routing.allocation.disk.watermark.flood_stage: "98%"
+      #cluster.routing.allocation.disk.watermark.low: "90%"
+      #cluster.routing.allocation.disk.watermark.high: "95%"
+      #cluster.routing.allocation.disk.watermark.flood_stage: "98%"
     #########################################################################
     networks:
     - name: "searchengine-net"
@@ -159,32 +159,34 @@
     - "{{ apps_folder }}/searchengine/elasticsearch/certs:/usr/share/elasticsearch/config/certificates"
     - "{{ elasticsearch_backup_folder }}:{{ elasticsearch_backup_folder }}"
   when: not container_info_elasticsearch_node1.exists
-  register: container_noder1_run_result
+#  register: container_noder1_run_result
 
-- name: Display node container logs
-  ansible.builtin.debug:
-    var:  container_noder1_run_result
+#- name: Display node container logs
+#  ansible.builtin.debug:
+#    var:  container_noder1_run_result
   # when: not ip_taken | bool
 ############################
-- name: Get info about the searchengine_elasticsearch_node1 container
-  community.docker.docker_container_info:
-    name: searchengine_elasticsearch_node1
-  register: container_info
+#- name: Get info about the searchengine_elasticsearch_node1 container
+#  community.docker.docker_container_info:
+#    name: searchengine_elasticsearch_node1
+#  register: container_info
 
-- name: Debug container state
-  ansible.builtin.debug:
-    msg: "Container '{{ container_info.container.Name }}' is in state: {{ container_info }}"
-  #when: ip_taken | bool
+#- name: Debug container state
+#  ansible.builtin.debug:
+#    msg: "Container '{{ container_info.container.Name }}' is in state: {{ container_info }}"
+#  #when: ip_taken | bool
 
-- name: get elastic node1 logs
-  command: " docker logs searchengine_elasticsearch_node1"
-  register: node1_logs
-  changed_when: false
+#- name: get elastic node1 logs
+#  command: " docker logs -f searchengine_elasticsearch_node1"
+#  timeout: 30
+#  ignore_errors: true
+#  register: node1_logs
+#  changed_when: false
 
-- name: Debug elastic node 1 logs
-  ansible.builtin.debug:
-    msg: "Node1 logs is:  '{{ node1_logs }}"
-  changed_when: false
+#- name: Debug elastic node 1 logs
+#  ansible.builtin.debug:
+#    msg: "Node1 logs is:  '{{ node1_logs }}"
+#  changed_when: false
 
 
 ########################################
