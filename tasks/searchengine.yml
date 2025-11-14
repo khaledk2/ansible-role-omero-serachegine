@@ -1,7 +1,6 @@
 ---
 # Configure and run search Engine
 
-
 - name: Get info about the searchengine container
   community.docker.docker_container_info:
     name: searchengine
@@ -10,7 +9,6 @@
 - name: Debug search container state
   ansible.builtin.debug:
     msg: "Container '{{ container_info_searchengine_f }}' is in state: {{ container_info_searchengine_f.exists}}"
-
 
 - name: set elasticsearch_nodes_urls
   ansible.builtin.set_fact:
@@ -250,17 +248,6 @@
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
   when: not container_info_searchengine_f.exists
 
-############################
-#- name: Get info about the searchengine container
-#  community.docker.docker_container_info:
-#    name: searchengine
-#  register: container_info_searchengine
-
-#- name: Debug search container state
-#  ansible.builtin.debug:
-#    msg: "Container '{{ container_info_searchengine.container.Name }}' is in state: {{ container_info_searchengine_f }}"
-#  #when: ip_taken | bool
-########################################
 
 - name: Run docker celery job (Synchronize queries)
   become: yes
@@ -280,21 +267,6 @@
   when: not container_info_searchengine_f.exists
 
 
-
-############################
-#- name: Get info about the searchengine_celery container
-#  community.docker.docker_container_info:
-#    name: searchengine_celery
-#  register: container_info_celery
-
-#- name: Debug celery container state
-#  ansible.builtin.debug:
-#    msg: "Container '{{ container_info_celery.container.Name }}' is in state: {{ container_info.container.State.Status }}"
-
-
-########################################
-
-
 - name: Run docker searchengine run celery beat
   become: yes
   community.docker.docker_container:
@@ -312,56 +284,3 @@
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   when: not container_info_searchengine_f.exists
-############################
-#- name: Get info about the searchengine_beat container
-#  community.docker.docker_container_info:
-#    name: searchengine_beat
-#  register: container_info_beat
-
-#- name: Debug beat container state
-#  ansible.builtin.debug:
-#    msg: "Container '{{ container_info_beat.container.Name }}' is in state: {{ container_info.container.State.Status }}"
-
-########################################
-
-#- name: create_omero_indexes
-#  become: yes
-#  community.docker.docker_container:
-#    image: "{{ searchengine_docker_image }}"
-#    name: searchengine_create_index
-#    cleanup: True
-#    command: "create_index -r image"
-#    networks:
-#    - name: searchengine-net
-    #restart: "{{ searchengine_conf_status | changed }}"
-#    state: started
-    #restart_policy: always
-#    volumes:
-#      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
-#      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
- #     - "{{ apps_folder }}/data_dump:/data/data_dump"
- # when: not container_info_searchengine_f.exists
-
-#- name: Wait for index to exit
-#  community.docker.docker_container_info:
-#    name: searchengine_create_index
-#  register: container_index_info
-  #until: not container_index_info.container.State.Running
-  #retries: 60
-  #delay: 1
-#  when: not container_info_searchengine_f.exists
-
-#- name: Debug index  container state
-#  ansible.builtin.debug:
-#    msg:  "Results is: {{ container_index_info }}"
-
-#- name: Get info about the nginx status
-#  command: "docker logs searchengine-nginx-container"
-#  changed_when: false
-
-#  register: node_status
-
-#- name: Debug nginx status
-#  ansible.builtin.debug:
-#    msg: "Container '{{ node_status }}"
-#  changed_when: false

@@ -159,36 +159,7 @@
     - "{{ apps_folder }}/searchengine/elasticsearch/certs:/usr/share/elasticsearch/config/certificates"
     - "{{ elasticsearch_backup_folder }}:{{ elasticsearch_backup_folder }}"
   when: not container_info_elasticsearch_node1.exists
-#  register: container_noder1_run_result
 
-#- name: Display node container logs
-#  ansible.builtin.debug:
-#    var:  container_noder1_run_result
-  # when: not ip_taken | bool
-############################
-#- name: Get info about the searchengine_elasticsearch_node1 container
-#  community.docker.docker_container_info:
-#    name: searchengine_elasticsearch_node1
-#  register: container_info
-
-#- name: Debug container state
-#  ansible.builtin.debug:
-#    msg: "Container '{{ container_info.container.Name }}' is in state: {{ container_info }}"
-#  #when: ip_taken | bool
-
-#- name: get elastic node1 logs
-#  command: " docker logs -f searchengine_elasticsearch_node1"
-#  timeout: 30
-#  ignore_errors: true
-#  register: node1_logs
-#  changed_when: false
-
-#- name: Debug elastic node 1 logs
-#  ansible.builtin.debug:
-#    msg: "Node1 logs is:  '{{ node1_logs }}"
-#  changed_when: false
-
-########################################
 - name: Run docker elasticsearch for the remaining nodes
   become: yes
   community.docker.docker_container:
