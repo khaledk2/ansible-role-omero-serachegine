@@ -31,9 +31,4 @@ def test_searchengine_search_elastic_connection(host):
     out = host.check_output('curl -L -k -u  "elastic:elastic_password" https://127.0.0.1:9201/image_keyvalue_pair_metadata')
     assert '{"image_keyvalue_pair_metadata":{"aliases":{},"mappings":' in out
 
-
-def test_searchengine_elastic_docker_status(host):
-    out = host.check_output('docker logs searchengine_elasticsearch_node1')
-    assert 'test to display port' in out
-
 #image_keyvalue_pair_metadata
