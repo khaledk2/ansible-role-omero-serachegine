@@ -177,9 +177,7 @@
   #when: ip_taken | bool
 
 - name: get elastic node1 logs
-  command: " docker logs -f searchengine_elasticsearch_node1"
-  timeout: 30
-  ignore_errors: true
+  command: " docker logs searchengine_elasticsearch_node1"
   register: node1_logs
   changed_when: false
 
