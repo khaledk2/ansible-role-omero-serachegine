@@ -286,7 +286,7 @@
   when: not container_info_searchengine_f.exists
 
 
-- name: Run docker searchengine  create_index -r image1
+- name: Run docker searchengine  test create index -r image1
   become: yes
   community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
@@ -297,7 +297,6 @@
     - name: searchengine-net
     #restart: "{{ searchengine_conf_status | changed }}"
     state: started
-    #restart_policy: always
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
