@@ -123,7 +123,7 @@
       http.host: 0.0.0.0
       #http.port: 9200
       #ES_JAVA_OPTS: "-Xms2g -Xmx2g"
-      ES_JAVA_OPTS: "-Xms64m -Xmx64m"
+      ES_JAVA_OPTS: "-Xms128m -Xmx128m"
       ingest.geoip.downloader.enabled: "false"
       ########################################
       es_api_basic_auth_username: "elastic"
