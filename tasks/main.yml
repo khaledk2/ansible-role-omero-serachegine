@@ -19,10 +19,8 @@
     state: present
   become: true
 
-- name:  Import ome.docker role
-  ansible.builtin.import_role:
-    name: ome.docker
-
+- name: install docker
+  import_tasks: install_docker.yml
 
 - name: Check if a elastic node data folder exists
   ansible.builtin.stat:
