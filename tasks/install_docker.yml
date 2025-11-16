@@ -1,16 +1,28 @@
 ---
+- name: docker | Import a key for docker
+  become: true
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://download.docker.com/linux/centos/gpg
 
 - name: docker | setup dnf repository
   become: true
   ansible.builtin.dnf:
     update_cache: true
+    name:
+        - https://download.docker.com/linux/centos/9/x86_64/stable/Packages/containerd.io-1.6.24-3.1.el9.x86_64.rpm
+        - https://download.docker.com/linux/centos/9/x86_64/stable/Packages/docker-ce-20.10.24-3.el9.x86_64.rpm
+        - https://download.docker.com/linux/centos/9/x86_64/stable/Packages/docker-ce-cli-20.10.24-3.el9.x86_64.rpm
+        - https://download.docker.com/linux/centos/9/x86_64/stable/Packages/docker-scan-plugin-0.23.0-3.el9.x86_64.rpm
+        - https://download.docker.com/linux/centos/9/x86_64/stable/Packages/docker-ce-rootless-extras-24.0.7-1.el9.x86_64.rpm
     state: present
-    name: dnf-plugins-core
 
-- name: setup dnf repository
+- name: docker | install docker
   become: true
-  community.general.dnf_config_manager:
-        add_repo: https://download.docker.com/linux/centos/docker-ce.repo
+  ansible.builtin.dnf:
+    name:
+      - docker-ce
+    state: present
 
 - name: INSTALL  docker
   ansible.builtin.dnf:
