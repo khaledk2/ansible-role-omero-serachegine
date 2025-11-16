@@ -1,9 +1,4 @@
 ---
-- name:  Import a key for docker
-  become: true
-  ansible.builtin.rpm_key:
-    state: present
-    key: https://download.docker.com/linux/centos/gpg
 
 - name: docker | setup dnf repository
   become: true
@@ -12,14 +7,12 @@
     state: present
     name: dnf-plugins-core
 
-- name: docker | setup dnf repository
+- name: setup dnf repository
   become: true
-  ansible.builtin.dnf:
-    update_cache: true
-    state: present
-    name: https://download.docker.com/linux/centos/docker-ce.repo
+  community.general.dnf_config_manager:
+        add_repo: https://download.docker.com/linux/centos/docker-ce.repo
 
-- name: add docker repo
+- name: INSTALL  docker
   ansible.builtin.dnf:
     name:
       - docker-ce
