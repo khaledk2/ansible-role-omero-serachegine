@@ -1,7 +1,6 @@
 ---
 - name: Converge
   hosts: all
-
   tasks:
 
   - name: install redis
@@ -10,22 +9,21 @@
       state: present
     become: yes
 
-  - name: disable redis service installed on the host
+  - name: diable redis sevice installed on the host
     ansible.builtin.systemd_service:
       name: redis
       state: stopped
-      # enabled: false
+      enabled: false
     become: yes
-
-    roles:
-      #- role: ome.postgresql
-      #  postgresql_version: "16"
-      #  postgresql_databases:
-      #    - name: database_name
-      #      owner: database_user
-      #  postgresql_users:
-      #    - user: database_user
-      #      password: database_password
-      #      databases: [ database_name ]
-      - role: ome.omero_searchengine
-        ES_JAVA_OPTIONS: "-Xms128m -Xmx128m"
+  roles:
+    #- role: ome.postgresql
+    #  postgresql_version: "16"
+    #  postgresql_databases:
+    #    - name: database_name
+    #      owner: database_user
+    #  postgresql_users:
+    #    - user: database_user
+    #      password: database_password
+    #      databases: [ database_name ]
+  - role: ome.omero_searchengine
+    ES_JAVA_OPTIONS: "-Xms128m -Xmx128m"
