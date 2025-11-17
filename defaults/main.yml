@@ -1,4 +1,4 @@
-apps_folder: /data
+apps_folder: /tmp/data
 database_server_url: 127.0.0.1
 elasticsearch_nodes_urls: []
 database_port: 5432
@@ -24,7 +24,7 @@ ca_password: "ca_password"
 keystore_password: "keystore_password"
 ELASTIC_PASSWORD: "elastic_password"
 REDIS_PORT: 6379
-REDIS_URL: 10.11.0.22
+REDIS_URL: 10.11.0.15
 ASYNCHRONOUS_SEARCH: true
 CACHE_FOLDER: /etc/searchengine/cachedata
 DATA_DUMP_FOLDER: /data/data_dump/
