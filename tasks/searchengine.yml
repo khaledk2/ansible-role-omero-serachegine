@@ -303,12 +303,10 @@
       - name: searchengine-net
     #restart: "{{ searchengine_conf_status | changed }}"
     state: started
-    restart_policy: always
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
-  when: not container_info_searchengine_f.exists
   tags: [never, indexer]
 
 - name: backup the searchengine data
@@ -322,12 +320,10 @@
       - name: searchengine-net
     #restart: "{{ searchengine_conf_status | changed }}"
     state: started
-    restart_policy: always
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
-  when: not container_info_searchengine_f.exists
   tags: [never, backup]
 
 - name: restore the searchengine data
@@ -341,7 +337,6 @@
       - name: searchengine-net
     #restart: "{{ searchengine_conf_status | changed }}"
     state: started
-    restart_policy: always
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
@@ -360,12 +355,10 @@
       - name: searchengine-net
     #restart: "{{ searchengine_conf_status | changed }}"
     state: started
-    restart_policy: always
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
-  when: not container_info_searchengine_f.exists
   tags: [never, bff_projects]
 
 - name: dump screens to BFF format
@@ -379,10 +372,8 @@
       - name: searchengine-net
     #restart: "{{ searchengine_conf_status | changed }}"
     state: started
-    restart_policy: always
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
-  when: not container_info_searchengine_f.exists
   tags: [never, bff_screens]
