@@ -2,6 +2,7 @@
 # Configure and run search Engine
 
 - name: Get info about the searchengine container
+  become: true
   community.docker.docker_container_info:
     name: searchengine
   register: container_info_searchengine_f
