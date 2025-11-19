@@ -6,7 +6,6 @@
   community.docker.docker_container_info:
     name: searchengine
   register: container_info_searchengine_f
-  tags: [always]
 
 - name: Debug search container state
   ansible.builtin.debug:
