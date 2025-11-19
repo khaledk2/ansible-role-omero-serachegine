@@ -221,6 +221,21 @@
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
   changed_when: false
 
+- name: Set set_no_processes
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: set_no_index_processes
+    cleanup: True
+    auto_remove: yes
+    command: "set_no_processes -n {{ no_index_processes }}"
+    state: started
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
+
+#set_no_processes
+
 - name: Run docker searchengine  test create index -r image1
   become: yes
   community.docker.docker_container:
