@@ -5,6 +5,7 @@
   community.docker.docker_container_info:
     name: searchengine
   register: container_info_searchengine_f
+  tags: [always]
 
 - name: Debug search container state
   ansible.builtin.debug:
@@ -289,3 +290,99 @@
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   when: not container_info_searchengine_f.exists
+
+
+- name: Index the default data source
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: searchengine_indexer
+    cleanup: True
+    command: "get_index_data_from_database -d {{ DEFAULT_DATASOURCE }}"
+    networks:
+      - name: searchengine-net
+    #restart: "{{ searchengine_conf_status | changed }}"
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
+  when: not container_info_searchengine_f.exists
+  tags: [never, indexer]
+
+- name: backup the searchengine data
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: searchengine_backup_data
+    cleanup: True
+    command: "backup_elasticsearch_data"
+    networks:
+      - name: searchengine-net
+    #restart: "{{ searchengine_conf_status | changed }}"
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
+  when: not container_info_searchengine_f.exists
+  tags: [never, backup]
+
+- name: restore the searchengine data
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: searchengine_restore
+    cleanup: True
+    command: "restore_elasticsearch_data"
+    networks:
+      - name: searchengine-net
+    #restart: "{{ searchengine_conf_status | changed }}"
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
+  when: not container_info_searchengine_f.exists
+  tags: [never, restore]
+
+- name: dump project to BFF format
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: dump_projects_BFF
+    cleanup: True
+    command: "dump_searchengine_data -d {{ DEFAULT_DATASOURCE }} -r project  -b True -t {{ DATA_DUMP_FOLDER }}/{{ DEFAULT_DATASOURCE }}/csv_bff -o True"
+    networks:
+      - name: searchengine-net
+    #restart: "{{ searchengine_conf_status | changed }}"
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
+  when: not container_info_searchengine_f.exists
+  tags: [never, bff_projects]
+
+- name: dump screens to BFF format
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: dump_screens_BFF
+    cleanup: True
+    command: "dump_searchengine_data -d {{ DEFAULT_DATASOURCE }} -r screen  -b True -t {{ DATA_DUMP_FOLDER }}/{{ DEFAULT_DATASOURCE }}/csv_bff -o True"
+    networks:
+      - name: searchengine-net
+    #restart: "{{ searchengine_conf_status | changed }}"
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
+  when: not container_info_searchengine_f.exists
+  tags: [never, bff_screens]
