@@ -249,6 +249,8 @@
     state: started
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
   when: not container_info_searchengine_f.exists
 
 - name: Run docker searchengine
