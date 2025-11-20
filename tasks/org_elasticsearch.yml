@@ -164,7 +164,7 @@
       cluster.initial_master_nodes: "{{ elasticsearch_nodes | join(',') }}"
       http.host: 0.0.0.0
       #http.port: 9200
-      ES_JAVA_OPTS: ""{{ ES_JAVA_OPTIONS }}""
+      ES_JAVA_OPTS: "{{ ES_JAVA_OPTIONS }}"
       #"-Xms2g -Xmx2g"
       ingest.geoip.downloader.enabled: "false"
       ########################################
