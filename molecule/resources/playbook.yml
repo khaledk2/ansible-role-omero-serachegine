@@ -9,7 +9,7 @@
       state: present
     become: yes
 
-  - name: diable redis sevice installed on the host
+  - name: disable installed redis service installed on the host
     ansible.builtin.systemd_service:
       name: redis
       state: stopped
