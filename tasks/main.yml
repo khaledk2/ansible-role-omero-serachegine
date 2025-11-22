@@ -135,3 +135,4 @@
   until: elasticsearch_run.rc == 0
   retries: 12
   delay: 5
+  when: not elastic_node_data_folder.stat.exists
