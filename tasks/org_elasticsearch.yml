@@ -319,9 +319,3 @@
   with_sequence: start=2 count={{ elasticsearch_no_nodes | int -1 }}
 
 
-- name: Install collection from Ansible Galaxy with retries
-  ansible.builtin.command: 'curl -I  -k -u "elastic:elastic_password" https://127.0.0.1:9201/image_keyvalue_pair_metadata_1'
-  register: elasticsearch_run
-  until: elasticsearch_run.rc == 0
-  retries: 12
-  delay: 5
