@@ -9,12 +9,11 @@
 
 - name: Ensure sysctl is present
   ansible.builtin.package:
-    name: "{{ 'procps' if ansible_os_family == 'Debian' else 'procps-ng' }}"
+    name: procps-ng
     state: present
   become: true
 
-
-- name: Ensure sysctl is present
+- name: update curl and ca certificates
   ansible.builtin.dnf:
     name:
       - curl
