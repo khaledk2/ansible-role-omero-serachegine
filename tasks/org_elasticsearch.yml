@@ -185,7 +185,7 @@
       xpack.security.transport.ssl.truststore.path: "/usr/share/elasticsearch/config/certificates/searchengine_elasticsearch_node1/searchengine_elasticsearch_node1.p12"
       xpack.security.transport.ssl.keystore.password: "{{ keystore_password }}"
       xpack.security.transport.ssl.truststore.password: "{{ keystore_password }}"
-      discovery.type: single-node
+      #discovery.type: single-node
     #########################################################################
     networks:
     - name: "searchengine-net"
