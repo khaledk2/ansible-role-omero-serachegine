@@ -324,4 +324,4 @@
   register: elasticsearch_run
   until: elasticsearch_run.rc == 0
   retries: 12
-  delay: 15
+  delay: 5
