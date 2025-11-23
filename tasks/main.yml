@@ -128,6 +128,16 @@
 - name: deploy searchengine
   ansible.builtin.import_tasks: searchengine.yml
 
+- name: check elasticsearch node2
+  community.docker.docker_container_info:
+    name: my-searchengine_elasticsearch_node1
+  register: node1_log2
+
+
+- name: display elasticsearch logs2
+  debug:
+    var: node1_log2
+
 
 - name: Check Elasticsearch
   ansible.builtin.command: 'curl -I  -k -u "elastic:elastic_password" https://127.0.0.1:9201/'

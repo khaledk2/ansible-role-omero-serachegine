@@ -230,7 +230,7 @@
 - name: check elasticsearch node
   community.docker.docker_container_info:
     name: my-searchengine_elasticsearch_node1
-    register: node1_log
+  register: node1_log
 
 
 - name: display elasticsearch logs
