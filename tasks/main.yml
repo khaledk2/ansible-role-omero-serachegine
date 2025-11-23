@@ -148,7 +148,7 @@
     var: node1_log3
 
 - name: check elasticsearch node4
-  command: "docker  logs node1_log2"
+  command: "docker logs searchengine_elasticsearch_node1"
   register: node1_log4
 
 
