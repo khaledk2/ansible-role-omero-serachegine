@@ -136,7 +136,7 @@
 
 - name: display elasticsearch logs2
   debug:
-    var: node1_log2.HostConfig.LogConfig
+    var: node1_log2
 
 
 - name: Check Elasticsearch
