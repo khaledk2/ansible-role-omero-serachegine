@@ -114,9 +114,9 @@
   when: not elastic_node_data_folder.stat.exists
 
 
-- name: deploy optm.yml
-  ansible.builtin.include_tasks: optm.yml
-  when: not elastic_node_data_folder.stat.exists
+#- name: deploy optm.yml
+#  ansible.builtin.include_tasks: optm.yml
+#  when: not elastic_node_data_folder.stat.exists
 
 - name: deploy elasticsearch cluster
   ansible.builtin.include_tasks: elasticsearch.yml
