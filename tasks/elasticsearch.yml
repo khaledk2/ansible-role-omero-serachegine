@@ -229,13 +229,14 @@
 
 - name: check elasticsearch node
   community.docker.docker_container_info:
-    name: my-searchengine_elasticsearch_node1
+    name: searchengine_elasticsearch_node1
   register: node1_log
 
 
 - name: display elasticsearch logs
   debug:
     var: node1_log
+
 
 - name: Run docker elasticsearch for the remaining nodes
   become: yes
