@@ -172,11 +172,11 @@
     name: "searchengine_elasticsearch_node1"
     cleanup: True
     ulimits:
-      'memlock:-1:-1'
-      'nofile:65536'
-      #nofile: 65536
-         #soft: 65536
-         #hard: 65536
+      #'memlock:-1:-1'
+      #'nofile:-65536:-65536'
+      #nofile:
+      #  soft: 65536
+      #  hard: 65536
       #memlock:
       #  soft: -1
       #  hard: -1
