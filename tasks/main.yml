@@ -132,29 +132,35 @@
   community.docker.docker_container_info:
     name: searchengine_elasticsearch_node1
   register: node1_log2
+  when: not elastic_node_data_folder.stat.exists
 
 
 - name: display elasticsearch logs2
   debug:
     var: node1_log2
+  when: not elastic_node_data_folder.stat.exists
 
 - name: check elasticsearch node3
   command: "docker  ps"
   register: node1_log3
+  when: not elastic_node_data_folder.stat.exists
 
 
 - name: display elasticsearch logs3
   debug:
     var: node1_log3
+  when: not elastic_node_data_folder.stat.exists
 
 - name: check elasticsearch node4
   command: "docker logs searchengine_elasticsearch_node1"
   register: node1_log4
+  when: not elastic_node_data_folder.stat.exists
 
 
 - name: display elasticsearch logs3
   debug:
     var: node1_log4
+  when: not elastic_node_data_folder.stat.exists
 
 - name: Check Elasticsearch
   ansible.builtin.command: 'curl -k -u "elastic:my_password" https://127.0.0.1:9201/'
