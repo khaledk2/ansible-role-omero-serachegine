@@ -149,6 +149,23 @@
     - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
   changed_when: false
 
+- name: configure quries folder for  searchengine
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: searchengine_quries_folder
+    cleanup: True
+    auto_remove: yes
+    command: "set_queries_folder -q {{ QUIRES_FOLDER }}"
+    #networks:
+    #- name: searchengine-net
+    #published_ports:
+    #- "5577:5577"
+    state: started
+    volumes:
+    - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
+
 - name: configure number of cache rows for docker searchengine
   become: yes
   community.docker.docker_container:
@@ -264,6 +281,7 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   when: not container_info_searchengine_f.exists
 
@@ -284,6 +302,7 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   when: not container_info_searchengine_f.exists
 
@@ -301,6 +320,7 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   when: not container_info_searchengine_f.exists
 
@@ -319,6 +339,7 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   when: not container_info_searchengine_f.exists
 
@@ -338,6 +359,7 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   tags: [never, indexer]
 
@@ -356,6 +378,7 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   tags: [never, backup]
 #ansible-playbook install_searchengine.yml  --tags "restore"
@@ -373,6 +396,7 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   tags: [never, restore]
 
@@ -384,7 +408,8 @@
     image: "{{ searchengine_docker_image }}"
     name: dump_projects_BFF
     cleanup: True
-    command: "dump_searchengine_data -d {{ DEFAULT_DATASOURCE }} -r project  -b True -t {{ DATA_DUMP_FOLDER }}/{{ DEFAULT_DATASOURCE }}/csv_bff -o True"
+    command: "dump_searchengine_data -d {{ default_datasource }} -r project  -b True -t {{ DATA_DUMP_FOLDER }}/{{ default_datasource }}/csv_bff -o True"
+             #dump_searchengine_data -d idr -r project                          -b True -t /data/data_dump/idr/csv_bff -o True
     networks:
       - name: searchengine-net
     #restart: "{{ searchengine_conf_status | changed }}"
@@ -392,6 +417,7 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   tags: [never, bff_projects]
 
@@ -402,7 +428,7 @@
     image: "{{ searchengine_docker_image }}"
     name: dump_screens_BFF
     cleanup: True
-    command: "dump_searchengine_data -d {{ DEFAULT_DATASOURCE }} -r screen  -b True -t {{ DATA_DUMP_FOLDER }}/{{ DEFAULT_DATASOURCE }}/csv_bff -o True"
+    command: "dump_searchengine_data -d {{ default_datasource }} -r screen  -b True -t {{ DATA_DUMP_FOLDER }}/{{ default_datasource }}/csv_bff -o True"
     networks:
       - name: searchengine-net
     #restart: "{{ searchengine_conf_status | changed }}"
@@ -410,5 +436,15 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
   tags: [never, bff_screens]
+
+
+  # docker run
+  #-v /data/data_dump:/data/data_dump
+  #-v ~/.cache/huggingface:/root/.cache/huggingface
+  #-v /data/searchengine/searchengine/:/etc/searchengine/
+  #-v /data/searchengine/searchengine/logs/:/opt/app-root/src/logs/
+  #--network searchengine-net khaledk2/searchengine:new_packages
+  #dump_searchengine_data -d idr -r project   -b True -t /data/data_dump/idr/csv_bff -o True
