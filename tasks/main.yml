@@ -1,15 +1,53 @@
 ---
 ## create the searchengine and elasticsearch folders
 
+
+- name: Ensure sysctl is present
+  ansible.builtin.package:
+    name: procps-ng
+    state: present
+  become: true
+
+- name: update curl and ca certificates
+  ansible.builtin.dnf:
+    name:
+      - curl
+      - ca-certificates
+      # - requests
+    state: latest
+    allowerasing: true
+  become: true
+
+
+- name: Ensure python3-requests is installed
+  ansible.builtin.package:
+    name: python3-requests
+    state: present
+  become: yes
+
+
+- name:  Import ome.docker role
+  ansible.builtin.import_role:
+    name: ome.docker
+  #vars:
+  #  docker_systemd_setup: false
+
+
+- name: Check if a elastic node data folder exists
+  ansible.builtin.stat:
+    path: "{{ apps_folder }}/searchengine/elasticsearch/node1/data"
+  register: elastic_node_data_folder
+
 - name: Create app top level directory
   become: yes
   ansible.builtin.file:
     path: "{{ apps_folder }}/searchengine"
     recurse: yes
     state: directory
-    owner: root
+    owner: 1000
     group: root
     mode: 0755
+  changed_when: false
 
 - name: Create elasticsearch directory
   become: yes
@@ -20,6 +58,8 @@
     owner: 1000
     group: root
     mode: 0755
+  changed_when: false
+
 
 - name: Create elasticsearch certs folder
   become: yes
@@ -30,6 +70,7 @@
     owner: 1000
     group: root
     mode: 0755
+  changed_when: false
 
 
 - name: Create elasticsearch main nodes directories
@@ -42,6 +83,8 @@
     group: root
     mode: 0755
   with_sequence: start=1 count={{ elasticsearch_no_nodes }}
+  changed_when: false
+
 
 - name: Create elasticsearch logs directory
   become: yes
@@ -53,6 +96,9 @@
     group: root
     mode: 0755
   with_sequence: start=1 count={{ elasticsearch_no_nodes }}
+  changed_when: false
+
+
 
 - name: Create elasticsearch data directory
   become: yes
@@ -64,19 +110,27 @@
     group: root
     mode: 0755
   with_sequence: start=1 count={{ elasticsearch_no_nodes }}
+  #changed_when: false
+  when: not elastic_node_data_folder.stat.exists
+
+
+#- name: deploy optm.yml
+#  ansible.builtin.include_tasks: optm.yml
+#  when: not elastic_node_data_folder.stat.exists
 
 - name: deploy elasticsearch cluster
-  ansible.builtin.import_tasks: elasticsearch.yml
+  ansible.builtin.include_tasks: elasticsearch.yml
+  when: not elastic_node_data_folder.stat.exists
+  #elasticsearch.yml
 
 - name: deploy nginx for the search engine
-  ansible.builtin.import_tasks: searchengine_nginx.yml
-
+  ansible.builtin.import_tasks: nginx.yml
+  when: not test_mode
 
 - name: deploy redis
-  ansible.builtin.import_tasks: redis_deployment.yml
+  ansible.builtin.import_tasks: redis.yml
+  when: not test_mode
 
 - name: deploy searchengine
-  ansible.builtin.ansible.builtin.import_tasks: searchengine.yml
-
-
+  ansible.builtin.import_tasks: searchengine.yml
 
