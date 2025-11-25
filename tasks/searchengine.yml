@@ -1,13 +1,20 @@
 ---
 # Configure and run search Engine
 
-- name: Get database host
-  set_fact:
-    database_server_url: >-
-      {{
-        hostvars[groups[idr_environment | default('idr') + '-database-hosts'][0]]
-        ['ansible_' + (idr_net_iface | default('eth0'))]['ipv4']['address']
-      }}
+- name: Get info about the searchengine container
+  become: true
+  community.docker.docker_container_info:
+    name: searchengine
+  register: container_info_searchengine_f
+
+- name: Debug search container state
+  ansible.builtin.debug:
+    msg: "Container '{{ container_info_searchengine_f }}' is in state: {{ container_info_searchengine_f.exists}}"
+
+- name: set elasticsearch_nodes_urls
+  ansible.builtin.set_fact:
+    elasticsearch_nodes_urls: []
+
 
 - name: Create searchengine folder directory
   become: yes
@@ -15,15 +22,18 @@
     path: "{{ apps_folder }}/searchengine/searchengine"
     recurse: yes
     state: directory
-    owner: root
+    owner: 1000
     group: root
     mode: 0755
+  when: not container_info_searchengine_f.exists
 
 - name: Create searchengine logs directory
   become: yes
   file:
     path: "{{ apps_folder }}/searchengine/searchengine/logs"
     state: directory
+    owner: 1000
+    group: root
     mode: 0755
 
 - name: Create searchengine data_dump directory
@@ -31,6 +41,8 @@
   file:
     path: "{{ apps_folder }}/data_dump/{{ default_datasource }}"
     state: directory
+    owner: 1000
+    group: root
     mode: 0755
 
 - name: Create searchengine cached directory
@@ -38,6 +50,8 @@
   file:
     path: "{{ apps_folder }}/searchengine/searchengine/cacheddata"
     state: directory
+    owner: 1000
+    group: root
     mode: 0755
 
 #Add all elasticsearch nodes
@@ -48,32 +62,37 @@
 
 - name: configure elasticsearch backup folder for docker searchengine
   become: yes
-  docker_container:
+  community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
     name: searchengine_elasticsearch
     cleanup: True
     command: "set_elasticsearch_backup_folder -b {{ elasticsearch_backup_folder }}"
     state: started
+    auto_remove: yes
     volumes:
     - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
-    -
+  changed_when: false
+
 - name: configure elasticsearch for docker searchengine
   become: yes
-  docker_container:
+  community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
     name: searchengine_elasticsearch
     cleanup: True
     command: "set_elasticsearch_configuration -e {{ elasticsearch_nodes_urls | join(',') }}"
     state: started
+    auto_remove: yes
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
 
 - name: configure database for docker searchengine
   become: yes
-  docker_container:
+  community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
     name: searchengine_database
     cleanup: True
+    auto_remove: yes
     #auto_remove: yes
     command: >
       set_database_configuration -d {{ database_name }} -s {{ database_port }} -n {{ database_username }} -p {{ database_user_password }} -b {{ apps_folder }} -w {{ default_datasource }} -u {{ database_server_url }}
@@ -84,38 +103,42 @@
     state: started
     volumes:
     - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
 
 - name: set default data source
   become: yes
-  docker_container:
+  community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
     name: searchengine_database
     cleanup: True
-    #auto_remove: yes
+    auto_remove: yes
     command: >
       set_default_datasource -d  {{ default_datasource }}
     state: started
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
 
 - name: configure IDR_TEST_FILE_URL item
   become: yes
-  docker_container:
+  community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
     name: searchengine_IDR_TEST_FILE
     cleanup: True
+    auto_remove: yes
     command: "set_idr_test_file -i {{ IDR_TEST_FILE_URL }}"
     state: started
     volumes:
     - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
 
 - name: configure cache folder  for docker searchengine
   become: yes
-  docker_container:
+  community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
     name: searchengine_cache
     cleanup: True
-    #auto_remove: yes
+    auto_remove: yes
     command: "set_cache_folder -c /etc/searchengine/cachedata"
     #networks:
     #- name: searchengine-net
@@ -124,60 +147,147 @@
     state: started
     volumes:
     - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
+
+- name: configure quries folder for  searchengine
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: searchengine_quries_folder
+    cleanup: True
+    auto_remove: yes
+    command: "set_queries_folder -q {{ QUIRES_FOLDER }}"
+    #networks:
+    #- name: searchengine-net
+    #published_ports:
+    #- "5577:5577"
+    state: started
+    volumes:
+    - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
 
 - name: configure number of cache rows for docker searchengine
   become: yes
-  docker_container:
+  community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
     name: searchengine_cache
     cleanup: True
+    auto_remove: yes
     #auto_remove: yes
     command: "set_cache_rows_number -n {{ cache_rows }}"
     state: started
     volumes:
     - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
 
-- name: configure secret key for docker searchengine
+- name: configure dump folder for searchengine
   become: yes
-  docker_container:
+  community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
     name: searchengine_cache
     cleanup: True
+    auto_remove: yes
+    #auto_remove: yes
+    command: "set_data_dump_folder -d {{ DATA_DUMP_FOLDER }}"
+    state: started
+    volumes:
+    - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
+
+- name: configure secret key for docker searchengine
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: searchengine_cache
+    cleanup: True
+    auto_remove: yes
     #auto_remove: yes
     command: "set_searchengine_secret_key -s {{ searchengine_secret_key }}"
     state: started
     volumes:
     - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
 
 - name: configure elastics search password
   become: yes
-  docker_container:
+  community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
     name: elastics_password
     cleanup: True
+    auto_remove: yes
     #auto_remove: yes
     command: "set_elasticsearch_password -e {{ ELASTIC_PASSWORD }}"
     state: started
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
+
+- name: configure elastics redis url
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: redis_url
+    cleanup: True
+    auto_remove: yes
+    #auto_remove: yes
+    command: "set_redis_url -r {{ REDIS_URL }}"
+    state: started
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
 
 # automatic refreshing  when configuration change is detected
 
 - name: Set automatic refreshing the configuration
   become: yes
-  docker_container:
+  community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
     name: elastics_password
     cleanup: True
-    #auto_remove: yes
+    auto_remove: yes
     command: "set_automatic_refresh -a {{ automatic_refresh }}"
     state: started
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
+
+- name: Set set_no_processes
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: set_no_index_processes
+    cleanup: True
+    auto_remove: yes
+    command: "set_no_processes -n {{ no_index_processes }}"
+    state: started
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+  changed_when: false
+
+#set_no_processes
+
+- name: Run docker searchengine  test create index -r image1
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: searchengine_test_create_index
+    cleanup: True
+    auto_remove: yes
+    command: "create_index -r image1"
+    networks:
+    - name: searchengine-net
+    #restart: "{{ searchengine_conf_status | changed }}"
+    state: started
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
+  when: not container_info_searchengine_f.exists
 
 - name: Run docker searchengine
   become: yes
-  docker_container:
+  community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
     name: searchengine
     cleanup: True
@@ -192,11 +302,13 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
-
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
+  when: not container_info_searchengine_f.exists
 
 - name: Run docker celery job (Synchronize queries)
   become: yes
-  docker_container:
+  community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
     name: searchengine_celery
     cleanup: True
@@ -208,14 +320,15 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
-
+  when: not container_info_searchengine_f.exists
 
 - name: Run docker searchengine run celery beat
   become: yes
-  docker_container:
+  community.docker.docker_container:
     image: "{{ searchengine_docker_image }}"
-    name: searchengine_beat
+    name: searchengine_celery_beat
     cleanup: True
     command: "beat"
     networks:
@@ -226,4 +339,116 @@
     volumes:
       - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
       - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
       - "{{ apps_folder }}/data_dump:/data/data_dump"
+  when: not container_info_searchengine_f.exists
+
+
+#ansible-playbook install_searchengine.yml  --tags "indexer"
+- name: Index the default data source
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: searchengine_indexer
+    cleanup: True
+    command: "get_index_data_from_database"
+    networks:
+      - name: searchengine-net
+    #restart: "{{ searchengine_conf_status | changed }}"
+    state: started
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
+  tags: [never, indexer]
+
+#ansible-playbook install_searchengine.yml  --tags "backup"
+- name: backup the searchengine data
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: searchengine_backup_data
+    cleanup: True
+    command: "backup_elasticsearch_data"
+    networks:
+      - name: searchengine-net
+    #restart: "{{ searchengine_conf_status | changed }}"
+    state: started
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
+  tags: [never, backup]
+#ansible-playbook install_searchengine.yml  --tags "restore"
+- name: restore the searchengine data
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: searchengine_restore
+    cleanup: True
+    command: "restore_elasticsearch_data"
+    networks:
+      - name: searchengine-net
+    #restart: "{{ searchengine_conf_status | changed }}"
+    state: started
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
+  tags: [never, restore]
+
+
+#ansible-playbook install_searchengine.yml  --tags "bff_projects"
+- name: dump project to BFF format
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: dump_projects_BFF
+    cleanup: True
+    command: "dump_searchengine_data -d {{ default_datasource }} -r project  -b True -t {{ DATA_DUMP_FOLDER }}/{{ default_datasource }}/csv_bff -o True"
+             #dump_searchengine_data -d idr -r project                          -b True -t /data/data_dump/idr/csv_bff -o True
+    networks:
+      - name: searchengine-net
+    #restart: "{{ searchengine_conf_status | changed }}"
+    state: started
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
+  tags: [never, bff_projects]
+
+#ansible-playbook install_searchengine.yml  --tags "bff_screens"
+- name: dump screens to BFF format
+  become: yes
+  community.docker.docker_container:
+    image: "{{ searchengine_docker_image }}"
+    name: dump_screens_BFF
+    cleanup: True
+    command: "dump_searchengine_data -d {{ default_datasource }} -r screen  -b True -t {{ DATA_DUMP_FOLDER }}/{{ default_datasource }}/csv_bff -o True"
+    networks:
+      - name: searchengine-net
+    #restart: "{{ searchengine_conf_status | changed }}"
+    state: started
+    volumes:
+      - "{{ apps_folder }}/searchengine/searchengine/:/etc/searchengine/"
+      - "{{ apps_folder }}/searchengine/searchengine/cachedata:/etc/searchengine/cachedata"
+      - "{{ apps_folder }}/searchengine/searchengine/logs/:/opt/app-root/src/logs/"
+      - "{{ apps_folder }}/data_dump:/data/data_dump"
+  tags: [never, bff_screens]
+
+- name: copy adjust containers files script to the host machine
+  ansible.builtin.template:
+    src: adjust_containers_files.sh.j2
+    dest: /tmp/adjust_containers_files.sh
+    mode: '0755'
+  tags: [never, set_nginx_containers_files]
+
+- name: Execute the templated script
+  become: yes
+  ansible.builtin.command: bash /tmp/adjust_containers_files.sh
+  tags: [never, set_nginx_containers_files]
+
