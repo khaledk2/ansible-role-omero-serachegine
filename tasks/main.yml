@@ -18,20 +18,15 @@
     allowerasing: true
   become: true
 
-
 - name: omero searchengine | Ensure python3-requests is installed
   ansible.builtin.package:
     name: python3-requests
     state: present
   become: yes
 
-
 - name:  omero searchengine | Import ome.docker role
   ansible.builtin.import_role:
     name: ome.docker
-  #vars:
-  #  docker_systemd_setup: false
-
 
 - name: omero searchengine | Check if a elastic node data folder exists
   ansible.builtin.stat:
@@ -99,7 +94,6 @@
   changed_when: false
 
 
-
 - name: omero searchengine | Create elasticsearch data directory
   become: yes
   ansible.builtin.file:
@@ -112,7 +106,6 @@
   with_sequence: start=1 count={{ elasticsearch_no_nodes }}
   #changed_when: false
   when: not elastic_node_data_folder.stat.exists
-
 
 #- name: deploy optm.yml
 #  ansible.builtin.include_tasks: optm.yml
