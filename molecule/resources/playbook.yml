@@ -18,8 +18,8 @@
 
   roles:
   - role: ome.omero_searchengine
-    ES_JAVA_OPTIONS: "-Xms512m -Xmx512m"
+    es_java_options: "-Xms512m -Xmx512m"
     elasticsearch_no_nodes: 1
-    ELASTIC_PASSWORD: my_password
+    elastic_password: my_password
     test_mode: true
 
