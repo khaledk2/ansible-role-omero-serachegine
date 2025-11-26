@@ -39,12 +39,10 @@ Role Variables
 
 Example Playbook;
 -----------------
-
     - name: Deploying search engine
       connection: local
       hosts: localhost
       become: true
-
       roles:
       - role:  omero_searchengine
         vars:
@@ -70,3 +68,8 @@ Example Playbook;
          - no_index_processes: 6
          - elasticsearch_no_nodes: 3
          - nginx_port: 8080
+
+Author Information
+------------------
+
+ome-devel@lists.openmicroscopy.org.uk
